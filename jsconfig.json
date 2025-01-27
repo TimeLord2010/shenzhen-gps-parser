@@ -1,0 +1,16 @@
+{
+    "compilerOptions": {
+        "checkJs": true,
+        "allowJs": true,
+        "strictNullChecks": true,
+        "target": "ES2024",
+        "module": "ESNext",
+        "moduleResolution": "node",
+        "lib": [
+            "ESNext",
+        ],
+    },
+    "include": [
+        "src"
+    ]
+}
