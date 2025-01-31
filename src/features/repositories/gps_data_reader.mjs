@@ -1,7 +1,9 @@
 
 import { StringByteReader } from './string_byte_reader.mjs'
+import { AlarmReader } from './subreaders/alarm_reader.mjs'
 import { LocationReader } from './subreaders/location_reader.mjs'
 import { LoginReader } from './subreaders/login_reader.mjs'
+import { TerminalReader } from './subreaders/terminal_reader.mjs'
 
 export class GpsDataReader {
 
@@ -16,6 +18,11 @@ export class GpsDataReader {
      * @type {number}
      */
     packetLength
+
+    /**
+     * @type {import('../../data/models/packet_data_reader.mjs').IpacketDataReader}
+     */
+    data
 
     /**
      * Parses a GPS data packet.
@@ -52,7 +59,9 @@ export class GpsDataReader {
 
         this.informationSerialNumber = reader.read(2)
 
-        this.data = reader.readAll()
+        const rawData = reader.readAll()
+
+        this.data = this.getData(rawData)
     }
 
     get protocolMode() {
@@ -76,13 +85,21 @@ export class GpsDataReader {
         }
     }
 
-    getData() {
+    /**
+     * @private
+     * @param {string} rawData
+     */
+    getData(rawData) {
         const mode = this.protocolMode
         switch (mode) {
             case 'Login':
-                return new LoginReader(this.data)
+                return new LoginReader(rawData)
             case 'Location':
-                return new LocationReader(this.data)
+                return new LocationReader(rawData)
+            case 'Status':
+                return new TerminalReader(rawData)
+            case 'Alarm':
+                return new AlarmReader(rawData)
             default:
                 throw new Error('Unknown protocol mode')
         }
@@ -92,6 +109,8 @@ export class GpsDataReader {
         const mode = this.protocolMode
         switch (mode) {
             case 'Login':
+
+            default:
                 return [
                     '7878',
                     this.packetLength.toString(16).padStart(2, '0'),
@@ -100,8 +119,6 @@ export class GpsDataReader {
                     this.crc,
                     '0D0A'
                 ].join('')
-            default:
-                throw new Error('Unknown protocol mode')
         }
     }
 

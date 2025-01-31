@@ -21,4 +21,8 @@ export class LoginReader {
 
         this.terminalId = terminalId
     }
+
+    getResponse() {
+        return undefined
+    }
 }

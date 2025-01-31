@@ -32,4 +32,8 @@ export class TerminalReader {
             throw new Error(`Unexpected bytes in terminal info: ${reader.initialValue}`)
         }
     }
+
+    getResponse() {
+        return undefined
+    }
 }

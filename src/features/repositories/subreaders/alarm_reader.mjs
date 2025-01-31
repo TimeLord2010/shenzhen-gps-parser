@@ -71,4 +71,8 @@ export class AlarmReader extends LocationReader {
         })
         return alarmTypeDict[this.alarmType]
     }
+
+    getResponse() {
+        return undefined
+    }
 }

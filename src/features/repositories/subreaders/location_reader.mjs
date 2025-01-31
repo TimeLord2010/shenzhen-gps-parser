@@ -79,6 +79,15 @@ export class LocationReader {
         this.lac = reader.readShort()
         this.cellId = reader.read(3)
     }
+
+    /**
+     * @returns {string | undefined}
+     */
+    getResponse() {
+        // We can semd commands here if we want to.
+        // The command is sent in unicode.
+        return undefined
+    }
 }
 
 /**
