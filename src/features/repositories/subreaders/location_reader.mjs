@@ -84,8 +84,6 @@ export class LocationReader {
      * @returns {string | undefined}
      */
     getResponse() {
-        // We can semd commands here if we want to.
-        // The command is sent in unicode.
         return undefined
     }
 }

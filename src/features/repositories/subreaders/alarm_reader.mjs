@@ -73,6 +73,8 @@ export class AlarmReader extends LocationReader {
     }
 
     getResponse() {
+        // We can send commands here if we want to.
+        // The command is sent in unicode.
         return undefined
     }
 }
