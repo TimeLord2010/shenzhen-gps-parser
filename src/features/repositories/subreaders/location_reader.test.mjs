@@ -35,7 +35,7 @@ describe('LocationReader', () => {
 
     it('should correctly read the date', () => {
         // 2010-03-23 15:30:23
-        const date = reader.date
+        const date = reader.gps.date
         expect(date.getFullYear()).toBe(2010)
         expect(date.getMonth()).toBe(2)
         expect(date.getDate()).toBe(23)
@@ -46,9 +46,9 @@ describe('LocationReader', () => {
     })
 
     it('should correctly read the GPS data', () => {
-        expect(reader.quantity).toBe(204)
+        expect(reader.gps.quantity).toBe(204)
 
-        expect(reader.latitude).toBeCloseTo(22.546096)
+        expect(reader.gps.latitude).toBeCloseTo(22.546096)
 
         expect(reader.cellId).toBe('001FB8')
     })

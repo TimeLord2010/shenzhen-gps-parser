@@ -1,6 +1,8 @@
 
+import { crc16ccitt } from 'crc'
 import { StringByteReader } from './string_byte_reader.mjs'
 import { AlarmReader } from './subreaders/alarm_reader.mjs'
+import { GpsPhoneReader } from './subreaders/gps_phone_reader.mjs'
 import { LocationReader } from './subreaders/location_reader.mjs'
 import { LoginReader } from './subreaders/login_reader.mjs'
 import { TerminalReader } from './subreaders/terminal_reader.mjs'
@@ -55,7 +57,14 @@ export class GpsDataReader {
         }
 
         this.crc = reader.read(2)
-        // TODO: Check CRC-ITU code
+
+        // Check CRC-ITU code
+        const dataHex = packet.slice(3 * 2, - (2 * 2))
+        const calculatedCRC = crc16ccitt(Buffer.from(dataHex, 'hex')).toString(16)
+
+        if (calculatedCRC.toLowerCase() === this.crc.toLowerCase()) {
+            throw new Error('Invalid data by CRC')
+        }
 
         this.informationSerialNumber = reader.read(2)
 
@@ -100,26 +109,26 @@ export class GpsDataReader {
                 return new TerminalReader(rawData)
             case 'Alarm':
                 return new AlarmReader(rawData)
+            case 'GPS, query by phone':
+                return new GpsPhoneReader(rawData)
             default:
                 throw new Error('Unknown protocol mode')
         }
     }
 
     getResponse() {
-        const mode = this.protocolMode
-        switch (mode) {
-            case 'Login':
+        const getResponse = this.data.getResponse
+        const response = getResponse ? getResponse() : undefined
+        if (response) return response
 
-            default:
-                return [
-                    '7878',
-                    this.packetLength.toString(16).padStart(2, '0'),
-                    this.protocolNumber.toString(16).padStart(2, '0'),
-                    this.informationSerialNumber,
-                    this.crc,
-                    '0D0A'
-                ].join('')
-        }
+        return [
+            '7878',
+            this.packetLength.toString(16).padStart(2, '0'),
+            this.protocolNumber.toString(16).padStart(2, '0'),
+            this.informationSerialNumber,
+            this.crc,
+            '0D0A'
+        ].join('')
     }
 
 }
